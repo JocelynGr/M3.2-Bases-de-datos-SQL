@@ -22,10 +22,10 @@ def create_connection():
         return None
 
 
-def fetch_data(connection):
-    """ Consulta los registros de la tabla 'curso' y devuelve un DataFrame. """
+def fetch_data_sorted(connection):
+    """ Consulta los registros de la tabla 'curso' ordenados por 'nAsignatura' en orden descendente y devuelve un DataFrame. """
     try:
-        query = "SELECT * FROM curso WHERE idCurso=3"
+        query = "SELECT * FROM curso ORDER BY nAsignaturas DESC"
         df = pd.read_sql(query, connection)
         return df
 
@@ -48,8 +48,8 @@ def export_to_excel(df, filename):
 connection = create_connection()
 
 if connection:
-    df = fetch_data(connection)
+    df = fetch_data_sorted(connection)  # Obtiene los datos ordenados
     if df is not None:
-        export_to_excel(df, 'cursos.xlsx')
+        export_to_excel(df, 'cursos_ordenados.xlsx')
 
     connection.close()

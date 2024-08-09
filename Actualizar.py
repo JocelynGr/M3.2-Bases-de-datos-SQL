@@ -22,10 +22,23 @@ def create_connection():
         return None
 
 
+def update_data(connection):
+    """ Ejecuta una consulta de actualización en la tabla 'curso'. """
+    try:
+        cursor = connection.cursor()
+        query = "UPDATE curso SET nombreDescriptivo='Tercero' WHERE idCurso=3"
+        cursor.execute(query)
+        connection.commit()
+        print('Datos actualizados correctamente')
+
+    except Error as e:
+        print(f'Error al ejecutar la consulta de actualización: {e}')
+
+
 def fetch_data(connection):
     """ Consulta los registros de la tabla 'curso' y devuelve un DataFrame. """
     try:
-        query = "SELECT * FROM curso WHERE idCurso=3"
+        query = "SELECT * FROM curso"
         df = pd.read_sql(query, connection)
         return df
 
@@ -48,7 +61,8 @@ def export_to_excel(df, filename):
 connection = create_connection()
 
 if connection:
-    df = fetch_data(connection)
+    update_data(connection)  # Actualiza los datos
+    df = fetch_data(connection)  # Obtiene los datos actualizados
     if df is not None:
         export_to_excel(df, 'cursos.xlsx')
 

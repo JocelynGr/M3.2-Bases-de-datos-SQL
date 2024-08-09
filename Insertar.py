@@ -1,5 +1,4 @@
 import mysql.connector
-import pandas as pd
 from mysql.connector import Error
 
 
@@ -22,34 +21,26 @@ def create_connection():
         return None
 
 
-def fetch_data(connection):
-    """ Consulta los registros de la tabla 'curso' y devuelve un DataFrame. """
+def insert_data(connection, nombre_descriptivo, n_asignatura):
+    """ Inserta un nuevo registro en la tabla 'curso'. """
     try:
-        query = "SELECT * FROM curso WHERE idCurso=3"
-        df = pd.read_sql(query, connection)
-        return df
+        cursor = connection.cursor()
+        query = "INSERT INTO curso (idCurso,nombreDescriptivo, nAsignaturas) VALUES (%s,%s, %s)"
+        values = (15,'Octavo', 5)
+        cursor.execute(query, values)
+        connection.commit()
+        print(f'Registro insertado: nombreDescriptivo={nombre_descriptivo}, nAsignatura={n_asignatura}')
 
     except Error as e:
-        print(f'Error al ejecutar la consulta: {e}')
-        return None
-
-
-def export_to_excel(df, filename):
-    """ Exporta el DataFrame a un archivo Excel. """
-    try:
-        df.to_excel(filename, index=False, engine='openpyxl')
-        print(f'Datos exportados a {filename}')
-
-    except Exception as e:
-        print(f'Error al exportar a Excel: {e}')
+        print(f'Error al insertar el registro: {e}')
+        connection.rollback()
 
 
 # Usa las funciones
 connection = create_connection()
 
 if connection:
-    df = fetch_data(connection)
-    if df is not None:
-        export_to_excel(df, 'cursos.xlsx')
+    # Insertar un nuevo registro
+    insert_data(connection, 'Nuevo Curso', 5)  # Cambia estos valores según lo necesites
 
     connection.close()
